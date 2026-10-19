@@ -21,6 +21,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import android.widget.FrameLayout
@@ -65,19 +66,35 @@ class MainActivity : Activity() {
 
     private val packs = listOf(
         "qara_dildo.pak", "img_təyziqölçən.osw", "nənənin_reseptləri.zip", "kartof_tekstur_v2.dat",
-        "balina_mesh_HD.bin", "samp_ruhu.dll", "ağ_qaraciyər.ogg", "bulud_serveri_qiymeti.cfg",
-        "mini_pişik_hitbox.col", "dünya_sonu_plugin.so", "tyler1_texture_4K.png", "gecə_qapısı.ipl",
-        "fps_patch_ULTRA.bin", "ocaq_sesi_pack.wav", "1000_ping_fix.exe", "yerdəki_qum.dff", "sənin_şəkilin.jpg"
+        "balina_mesh_HD.bin", "virus.dll", "ağ_qaraciyər.ogg", "bulud_serveri_qiymeti.cfg",
+        "negrsiki.col", "dünya_sonu_plugin.so", "tyler1_texture_4K.png", "gecə_qapısı.ipl",
+        "virus2.bin", "ocaq_sesi_pack.wav", "1000_ping_fix.exe", "yerdəki_qum.dff", "sənin_şəkilin.jpg"
+    )
+
+    private val trollMsgs = listOf(
+        "⚠ xəta 0x7F: ruh qəbul edilmədi",
+        "⚠ serverə qoşulmaq olmur, təzə server aç",
+        "⚠ ping 9999ms: kompüterin üzrxahlıq istəyir",
+        "⚠ paketin yarısı Azərbaycan dilində yazılıb, oxunmur",
+        "⚠ Bu oyun sənin telefonunda işləməyəcək kasibb",
+        "⚠ yükləmə sürətin 0.2 kb/s (ev işin bitsin, qayıdarsan)",
+        "⚠ Ozune telefon al siktigimin fakiri",
+        "⚠ 1% qalıb (bu 3 saat çəkəcək)"
     )
 
     private val ticker = object : Runnable {
         override fun run() {
             val d = dots++ % 4
             statusTxt.text = phaseLabel + ".".repeat(d)
-            if (isReverse) addLine("geri alınır: " + packs.random(), "✗ ", RED)
-            else addLine(packs.random(), "✓ ", GREEN)
-            if (!isReverse && Random.nextInt(7) == 0) addLine("⚠ xəta 0x7F: ruh qəbul edilmədi", "", RED)
-            handler.postDelayed(this, 350)
+
+            if (isReverse) {
+                addLine("geri alınır: " + packs.random(), "✗ ", RED)
+            } else {
+                addLine(packs.random(), "✓ ", GREEN)
+                if (Random.nextInt(3) == 0) addLine(trollMsgs.random(), "", RED)
+                if (progBar.progress >= 990) addLine("⏳ 99% dayanıb, qarşıda nə var bilmirik", "", GREY)
+            }
+            handler.postDelayed(this, 1400)
         }
     }
 
@@ -350,14 +367,14 @@ class MainActivity : Activity() {
     }
 
     private fun runUp() {
-        ValueAnimator.ofInt(0, 720).apply {
-            duration = 4500
-            interpolator = LinearInterpolator()
+        ValueAnimator.ofInt(0, 1000).apply {
+            duration = 45000
+            interpolator = DecelerateInterpolator(2.2f)
             addUpdateListener { updateBar(it.animatedValue as Int) }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(a: Animator) {
-                    phaseLabel = "Serverdən cavab gözlənilir"
-                    handler.postDelayed({ runDown() }, 1500)
+                    phaseLabel = "100% ... bu səhv oldu, geri qayıdırıq"
+                    handler.postDelayed({ runDown() }, 3000)
                 }
             })
             start()
@@ -367,13 +384,14 @@ class MainActivity : Activity() {
     private fun runDown() {
         isReverse = true
         phaseLabel = "Yükləmə geri qaytarılır"
-        ValueAnimator.ofInt(720, 0).apply {
-            duration = 4000
+        ValueAnimator.ofInt(1000, 0).apply {
+            duration = 35000
             interpolator = AccelerateDecelerateInterpolator()
             addUpdateListener { updateBar(it.animatedValue as Int) }
             addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(a: Animator) {
-                    handler.postDelayed({ crashSequence() }, 700)
+                    phaseLabel = "Serverlə əlaqə itdi, ruh çıxdı"
+                    handler.postDelayed({ crashSequence() }, 2000)
                 }
             })
             start()
