@@ -43,13 +43,13 @@ class MainActivity : Activity() {
     private val BLUE = Color.parseColor("#4A8DF0")
     private val CARD = Color.parseColor("#161B22")
     private val BORDER = Color.parseColor("#2A3142")
+    private val BG = Color.parseColor("#0D1117")
 
     private lateinit var root: FrameLayout
 
     private val servers = mutableListOf("APACHES | YAXIN ZAMANDA", "APACHES | DEV SERVER", "APACHES | 404 NOT FOUND")
     private var server = servers[0]
 
-    // loading
     private lateinit var loadingCol: LinearLayout
     private lateinit var statusTxt: TextView
     private lateinit var percentTxt: TextView
@@ -59,7 +59,6 @@ class MainActivity : Activity() {
     private var isReverse = false
     private var dots = 0
 
-    // videos
     private var tiltAnim: ValueAnimator? = null
     private var vIndex = 0
     private val videos = listOf("video1", "video2", "video3")
@@ -75,7 +74,8 @@ class MainActivity : Activity() {
         override fun run() {
             val d = dots++ % 4
             statusTxt.text = phaseLabel + ".".repeat(d)
-            addLine(packs.random(), if (isReverse) "✗ geri alınır: " else "✓ ", if (isReverse) RED else GREEN)
+            if (isReverse) addLine("geri alınır: " + packs.random(), "✗ ", RED)
+            else addLine(packs.random(), "✓ ", GREEN)
             if (!isReverse && Random.nextInt(7) == 0) addLine("⚠ xəta 0x7F: ruh qəbul edilmədi", "", RED)
             handler.postDelayed(this, 350)
         }
@@ -83,7 +83,7 @@ class MainActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        root = FrameLayout(this).apply { setBackgroundColor(Color.parseColor("#0D1117")) }
+        root = FrameLayout(this).apply { setBackgroundColor(BG) }
         setContentView(root)
         showLauncher()
     }
@@ -148,7 +148,6 @@ class MainActivity : Activity() {
         root.removeAllViews()
         val row = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
 
-        // sidebar
         val side = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setBackgroundColor(Color.parseColor("#0F141C"))
@@ -181,7 +180,6 @@ class MainActivity : Activity() {
             LinearLayout.LayoutParams(MATCH, WRAP)
         )
 
-        // left: form
         val left = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(px(40), 0, px(40), 0)
@@ -195,7 +193,7 @@ class MainActivity : Activity() {
             hint = "Adını yaz"
             setHintTextColor(GREY)
             setTextColor(Color.WHITE)
-            singleLine = true
+            maxLines = 1
             inputType = InputType.TYPE_CLASS_TEXT
             background = bg(Color.parseColor("#1E2430"), 12, BORDER)
             setPadding(px(20), px(16), px(20), px(16))
@@ -257,7 +255,6 @@ class MainActivity : Activity() {
             start()
         }
 
-        // right: info cards
         val right = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL
@@ -307,7 +304,7 @@ class MainActivity : Activity() {
     private fun startLoading(name: String) {
         handler.removeCallbacks(ticker)
         root.removeAllViews()
-        root.setBackgroundColor(Color.parseColor("#0D1117"))
+        root.setBackgroundColor(BG)
 
         loadingCol = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -468,8 +465,9 @@ class MainActivity : Activity() {
     }
 
     private fun showFinal() {
+        tiltAnim?.cancel()
         root.removeAllViews()
-        root.setBackgroundColor(Color.parseColor("#0D1117"))
+        root.setBackgroundColor(BG)
         val col = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
